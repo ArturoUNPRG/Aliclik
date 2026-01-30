@@ -99,7 +99,3 @@ docker build -t aliclik-backend .
 docker run -p 3000:3000 aliclik-backend
 
 ```
-
-```
-
-```
