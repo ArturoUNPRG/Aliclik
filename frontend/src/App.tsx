@@ -7,10 +7,11 @@ import Login from './pages/Login';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import UsersPage from './pages/Users';
 import PokemonPage from './pages/Pokemon';
+import Register from './pages/Register';
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 };
 
@@ -50,7 +51,10 @@ function App() {
       />
 
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* RUTAS PÚBLICAS */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <DashboardLayout />
@@ -60,7 +64,9 @@ function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="pokemon" element={<PokemonPage />} />
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+
+        {/* CATCH ALL */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

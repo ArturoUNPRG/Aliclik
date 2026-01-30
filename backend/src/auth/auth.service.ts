@@ -1,10 +1,10 @@
-// backend/src/auth/auth.service.ts
-
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { RegisterDto } from './dto/register.dto';
 
+// Definimos la interfaz para el tipado seguro
 interface UserPayload {
   id: number;
   email: string;
@@ -20,10 +20,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // 1. Validar que el usuario existe y la contraseña coincide
+  // 1. Validar usuario (Login)
   async validateUser(email: string, pass: string): Promise<UserPayload | null> {
     const user = await this.usersService.findByEmail(email);
-    // Verificamos si existe el usuario y si tiene password
+
     if (user && user.password && (await bcrypt.compare(pass, user.password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = user;
@@ -32,7 +32,7 @@ export class AuthService {
     return null;
   }
 
-  // 2. Generar el Token JWT
+  // 2. Generar Token (Respuesta final del Login)
   login(user: UserPayload) {
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {
@@ -44,5 +44,10 @@ export class AuthService {
         role: user.role,
       },
     };
+  }
+
+  // 3. REGISTRO (CORREGIDO)
+  async register(registerDto: RegisterDto) {
+    return this.usersService.create(registerDto);
   }
 }

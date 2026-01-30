@@ -1,54 +1,66 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { setCredentials } from '../../store/authSlice';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
-import { Lock, Mail, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { AxiosError } from 'axios';
+import { Lock, Mail, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg(null);
 
     try {
-      const { data } = await api.post('/auth/login', { email, password });
+      await api.post('/auth/register', { name, email, password });
       
-      dispatch(setCredentials({ user: data.user, token: data.access_token }));
-      
-      toast.success(`Bienvenido, ${data.user.name}`);
-      navigate('/dashboard'); 
+      toast.success('¡Cuenta creada! Por favor inicia sesión.');
+      navigate('/login'); 
     } catch (error) {
       console.error(error);
-      setPassword('');
-      const mensaje = 'Correo o contraseña incorrectos';
-      setErrorMsg(mensaje);
-      document.getElementById('password')?.focus();
+      const err = error as AxiosError<{ message: string | string[] }>;
+      const msg = err.response?.data?.message || 'Error al registrar usuario';
+      setErrorMsg(Array.isArray(msg) ? msg[0] : msg);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+    <form className="mt-8 space-y-6" onSubmit={handleRegister}>
       
       {errorMsg && (
-        <div className="flex items-center p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100 animate-pulse">
-          <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+        <div className="flex items-center p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100">
+          <AlertCircle className="h-4 w-4 mr-2" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       <div className="space-y-4">
+        {/* Input Nombre */}
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <User className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            id="name"
+            type="text"
+            required
+            className="block w-full rounded-lg border border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-400 focus:border-brand focus:ring-brand sm:text-sm outline-none focus:ring-2"
+            placeholder="Tu Nombre Completo"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
         {/* Input Email */}
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -58,8 +70,8 @@ export const LoginForm = () => {
             id="email"
             type="email"
             required
-            className="block w-full rounded-lg border border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-400 focus:border-brand focus:ring-brand sm:text-sm transition-all outline-none focus:ring-2"
-            placeholder="correo@aliclik.app"
+            className="block w-full rounded-lg border border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-400 focus:border-brand focus:ring-brand sm:text-sm outline-none focus:ring-2"
+            placeholder="correo@ejemplo.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -74,8 +86,9 @@ export const LoginForm = () => {
             id="password"
             type="password"
             required
-            className="block w-full rounded-lg border border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-400 focus:border-brand focus:ring-brand sm:text-sm transition-all outline-none focus:ring-2"
-            placeholder="••••••••"
+            minLength={8}
+            className="block w-full rounded-lg border border-gray-300 py-3 pl-10 text-gray-900 placeholder-gray-400 focus:border-brand focus:ring-brand sm:text-sm outline-none focus:ring-2"
+            placeholder="Contraseña (min 8 caracteres)"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -89,22 +102,22 @@ export const LoginForm = () => {
       >
         {isLoading ? (
           <span className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" /> Verificando...
+            <Loader2 className="h-4 w-4 animate-spin" /> Creando cuenta...
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            Acceder a la Plataforma <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            Registrarme <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </span>
         )}
       </button>
 
       <div className="flex items-center justify-center text-sm">
-        <span className="text-gray-500">¿No tienes cuenta?</span>
+        <span className="text-gray-500">¿Ya tienes cuenta?</span>
         <Link 
-          to="/register" 
+          to="/login" 
           className="ml-2 font-semibold text-brand hover:text-brand-hover hover:underline transition-colors"
         >
-          Regístrate aquí
+          Ingresa aquí
         </Link>
       </div>
     </form>

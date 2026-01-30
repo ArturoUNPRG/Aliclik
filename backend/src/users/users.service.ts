@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma.service';
@@ -50,7 +54,13 @@ export class UsersService {
   }
 
   async findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+
+    return user;
   }
 
   async findByEmail(email: string) {
@@ -61,17 +71,25 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     console.log(`Intentando actualizar usuario ${id}`);
+
+    await this.findOne(id);
+
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    return this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id },
       data: updateUserDto,
     });
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = updatedUser;
+    return result;
   }
 
   async remove(id: number) {
+    await this.findOne(id);
     return this.prisma.user.delete({ where: { id } });
   }
 }
