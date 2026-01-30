@@ -1,55 +1,69 @@
-# Aliclik Fullstack Technical Test
+## 🌐 Demo Desplegado
 
-Plataforma web para la gestión de usuarios y catálogo de Pokémon, desarrollada con una arquitectura escalable y buenas prácticas de ingeniería de software.
+La aplicación se encuentra desplegada en un servidor VPS utilizando **Docker** y **Traefik** como Reverse Proxy.
 
-## Despliegue (Demo)
-**🔗 Web App:** [Poner aquí tu Link generado por Dokploy]
+### 👉 **[ACCEDER A LA PLATAFORMA WEB](https://bots-aliclikfrontend-7rzjkj-8d0617-62-146-230-42.traefik.me/)**
 
----
-
-## 🛠️ Stack Tecnológico
-
-### Frontend
-- **React** (Vite): SPA optimizada y rápida.
-- **Redux Toolkit**: Gestión global del estado (Sesión/Auth).
-- **TailwindCSS**: Diseño responsive y moderno.
-- **Axios**: Cliente HTTP con interceptores.
-
-### Backend
-- **NestJS**: Framework modular y escalable.
-- **Prisma ORM**: Modelado y migración de base de datos.
-- **MySQL**: Base de datos relacional.
-- **Cache Manager (In-Memory)**: Optimización de peticiones externas (BFF).
-- **Jest**: Testing unitario.
+> **Credenciales de Acceso (Admin):**
+> * **Email:** `arturo@aliclik.app`
+> * **Password:** `admin123`
+>
+> *Nota: También puedes registrar una nueva cuenta desde la pantalla de login.*
 
 ---
 
-## ✨ Funcionalidades Clave
+## 🛠️ Arquitectura y Tecnologías
 
-1.  **Arquitectura Backend for Frontend (BFF):**
-    El frontend no consume PokeAPI directamente. El backend actúa como proxy inteligente, transformando y limpiando la data.
+El proyecto sigue una estructura de **Monorepo** para mantener la coherencia entre el cliente y el servidor.
 
-2.  **Sistema de Caché & "Fire and Forget":**
-    - Las peticiones a PokeAPI se almacenan en caché para reducir latencia.
-    - Implementación de indexación en segundo plano para permitir búsquedas parciales instantáneas (ej: "pika" -> "Pikachu") sin bloquear la interfaz.
+### 🎨 Frontend (Cliente)
+Aplicación SPA reactiva optimizada para UX/UI.
+* **Core:** React 18 + Vite + TypeScript.
+* **Estado:** Redux Toolkit (Manejo robusto de sesión Auth y persistencia).
+* **Estilos:** TailwindCSS (Diseño Responsive Mobile-First).
+* **HTTP:** Axios (Interceptores para manejo global de errores y Tokens).
+* **Seguridad:** Rutas protegidas (`ProtectedRoute`) y redirecciones inteligentes.
 
-3.  **Seguridad:**
-    - Autenticación JWT completa.
-    - Protección de rutas (Guards).
-    - Hashing de contraseñas.
-
-4.  **CRUD Usuarios:**
-    - Gestión completa de usuarios con validaciones estrictas.
+### 🧱 Backend (Servidor)
+API RESTful modular diseñada para escalabilidad.
+* **Framework:** NestJS (Node.js).
+* **Base de Datos:** MySQL 8.0 hospedada en Docker.
+* **ORM:** Prisma (Tipado estricto, migraciones y seguridad).
+* **Patrón BFF:** Actúa como intermediario entre el cliente y PokeAPI, transformando y limpiando los datos.
+* **Testing:** Jest (Pruebas unitarias para Servicios y Controladores).
 
 ---
 
-## ⚙️ Instalación Local
+## ✨ Funcionalidades Implementadas
 
-### Requisitos
-- Node.js v18+
-- MySQL
+### 1. 🔐 Seguridad y Autenticación
+* **JWT Strategy:** Implementación completa de JSON Web Tokens con expiración.
+* **Hashing:** Las contraseñas se encriptan con `bcrypt` antes de tocar la base de datos.
+* **Guards:** Protección de endpoints críticos en el Backend.
+* **Blindaje:** El servicio de usuarios protege la información sensible (nunca devuelve passwords en las respuestas).
+
+### 2. 👥 Gestión de Usuarios (CRUD)
+* Registro de usuarios con validación de correos duplicados.
+* Edición de perfil y cambio de contraseña seguro.
+* Listado de usuarios (solo para roles autorizados).
+* Manejo de errores HTTP correctos (404 Not Found, 409 Conflict, 401 Unauthorized).
+
+### 3. ⚡ Módulo Pokémon (Integración Externa)
+* **Consumo API Externa:** Integración con `pokeapi.co`.
+* **Optimización:** Paginación controlada desde el servidor.
+* **Resiliencia:** Manejo de fallos en la API externa para no romper la aplicación cliente.
+
+---
+
+## ⚙️ Instrucciones de Instalación Local
+
+Si deseas ejecutar el proyecto en tu entorno local, sigue estos pasos:
+
+### Prerrequisitos
+* Node.js v18 o superior.
+* Docker (opcional, para la BD) o un servidor MySQL local.
 
 ### 1. Clonar el repositorio
 ```bash
-git clone [https://github.com/TU_USUARIO/aliclik-fullstack-test.git](https://github.com/TU_USUARIO/aliclik-fullstack-test.git)
+git clone <git@github.com:ArturoUNPRG/Aliclik.git>
 cd aliclik-fullstack-test
