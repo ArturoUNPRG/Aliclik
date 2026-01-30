@@ -1,5 +1,5 @@
 # 1. Usamos una imagen ligera de Node.js 18
-FROM node:18-alpine
+FROM node:20-alpine AS builder
 RUN apk add --no-cache openssl libc6-compat
 
 # 2. Creamos la carpeta de trabajo
