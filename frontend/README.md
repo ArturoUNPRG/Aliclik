@@ -84,7 +84,3 @@ docker run -p 80:80 aliclik-frontend
 * `src/pages`: Vistas principales.
 * `src/store`: Configuración de Redux.
 * `src/hooks`: Custom hooks.
-
-```
-
-```
